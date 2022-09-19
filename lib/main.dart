@@ -34,43 +34,61 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Icon> scoreKeeper = [];
   void checkAnswer(bool userPickedAns) {
     bool correctAns = quizBrain.getQuestionAns();
-    if (quizBrain.isFinished() == true) {
-      quizBrain.reset();
-      scoreKeeper = [];
-    } else {
-      if (userPickedAns == correctAns) {
-        setState(
-          () {
-            scoreKeeper.add(
-              Icon(
-                Icons.check,
-                color: Colors.red,
-              ),
-            );
-          },
-        );
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        alertbox();
+        quizBrain.reset();
+        scoreKeeper = [];
+        // correntQues = 0;
       } else {
-        setState(
-          () {
-            scoreKeeper.add(
-              Icon(
-                Icons.close,
-                color: Colors.red,
-              ),
-            );
-          },
-        );
+        if (userPickedAns == correctAns) {
+          setState(
+            () {
+              correntQues++;
+              scoreKeeper.add(
+                Icon(
+                  Icons.check,
+                  color: Colors.green,
+                ),
+              );
+            },
+          );
+        } else {
+          setState(
+            () {
+              scoreKeeper.add(
+                Icon(
+                  Icons.close,
+                  color: Colors.red,
+                ),
+              );
+            },
+          );
+        }
+        quizBrain.nextQuestion();
       }
-      quizBrain.nextQuestion();
-    }
+    });
   }
 
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  int correntQues = 0;
+  Future<void> alertbox() {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Quiz Finished'),
+        content: Text('Correct Questions Total ' + '$correntQues'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
