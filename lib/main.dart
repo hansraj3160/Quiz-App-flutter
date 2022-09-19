@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/quiz_brain.dart';
 
+QuizBrain quizBrain = QuizBrain();
 void main() {
   runApp(const MyApp());
 }
@@ -30,6 +32,39 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Icon> scoreKeeper = [];
+  void checkAnswer(bool userPickedAns) {
+    bool correctAns = quizBrain.getQuestionAns();
+    if (quizBrain.isFinished() == true) {
+      quizBrain.reset();
+      scoreKeeper = [];
+    } else {
+      if (userPickedAns == correctAns) {
+        setState(
+          () {
+            scoreKeeper.add(
+              Icon(
+                Icons.check,
+                color: Colors.red,
+              ),
+            );
+          },
+        );
+      } else {
+        setState(
+          () {
+            scoreKeeper.add(
+              Icon(
+                Icons.close,
+                color: Colors.red,
+              ),
+            );
+          },
+        );
+      }
+      quizBrain.nextQuestion();
+    }
+  }
+
   int _counter = 0;
 
   void _incrementCounter() {
@@ -55,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 flex: 4,
                 child: Center(
                   child: Text(
-                    'You have pushed the button this many times:',
+                    quizBrain.getQuestionText(),
                   ),
                 ),
               ),
@@ -66,12 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => {
                       setState(
                         () => {
-                          scoreKeeper.add(
-                            Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            ),
-                          ),
+                          checkAnswer(true),
                         },
                       ),
                     },
@@ -92,14 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextButton(
                     onPressed: () => {
-                      setState(() {
-                        scoreKeeper.add(
-                          Icon(
-                            Icons.close,
-                            color: Colors.red,
-                          ),
-                        );
-                      })
+                      checkAnswer(false),
                     },
                     child: Container(
                       alignment: Alignment.center,
